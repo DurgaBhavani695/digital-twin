@@ -6,6 +6,50 @@ This project is built using vanilla HTML5, CSS, and ES6 Javascript with **Vite**
 
 ---
 
+## 📊 Project Workflow Diagram
+
+```mermaid
+graph TD
+    subgraph 1. Data Input & Loading
+        A1[Vehicle Point Loads P_i] & A2[Wind Velocity] & A3[Ambient Temperature] --> B[Physical Bridge Excitation]
+    end
+
+    subgraph 2. Sensor Telemetry
+        B --> C1[Raw Accel Stream]
+        B --> C2[Raw Strain Stream]
+        B --> C3[Raw Tilt Stream]
+    end
+
+    subgraph 3. Sensor Fusion & FDIR Pipeline
+        C1 --> D1[Kalman filter smoothing]
+        C2 & C3 --> D2[Residual spatial analysis]
+        
+        D1 & D2 --> E{Outlier / Drift detected?}
+        E -->|Yes| F[FDIR: Isolate Faulty Sensor & Reconstruct True Signal]
+        E -->|No| G[Maintain Clean Fused Signal Output]
+    end
+
+    subgraph 4. Hybrid AI Diagnostic Engine
+        F & G --> H1[Data-Driven Surrogate: Autoencoder Pattern Analysis]
+        F & G --> H2[Physics-Informed Mechanics: Euler-Bernoulli Deflection Equation]
+        
+        H1 --> I1[Reconstruction Loss MSE]
+        H2 --> I2[Physics predicted strain baseline]
+        
+        I1 & I2 --> J[Discrepancy Residual Assessment]
+        J --> K[Compute Structural Health Index SHI]
+    end
+
+    subgraph 5. Main Orchestrator & View Binding
+        K --> L1[Visual Digital Twin canvas: Deflect deck, sway pylons, blink alerts]
+        K --> L2[Real-Time Telemetry Plots: Fusion vs Residual vs Loss]
+        K --> L3[Diagnostic Terminal Log Console]
+    end
+```
+
+---
+
+
 ## 🚀 Key Features
 
 * **Interactive 2D Spatial Digital Twin**: Real-time representation of the bridge structure. The road deck visually sags/deforms under dynamic traffic point loads (vehicles) and sways under environmental wind shear.
