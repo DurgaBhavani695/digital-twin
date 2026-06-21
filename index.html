@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Twin Infrastructure Monitor | Hybrid AI & Sensor Fusion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="glow-dot active"></div>
+        <h1>AetherBridge <span class="subtitle">Digital Twin Monitoring System</span></h1>
+      </div>
+      <div class="header-metrics">
+        <div class="metric-chip">
+          <span class="chip-label">SYSTEM STATUS</span>
+          <span class="chip-value status-good" id="sys-status">NOMINAL</span>
+        </div>
+        <div class="metric-chip">
+          <span class="chip-label">HEALTH INDEX (SHI)</span>
+          <span class="chip-value text-glowing-green" id="health-index-val">98.4%</span>
+        </div>
+        <div class="metric-chip">
+          <span class="chip-label">FUSED TELEMETRY</span>
+          <span class="chip-value" id="fused-rate">120 Hz</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Content Grid -->
+    <div class="dashboard-grid">
+      <!-- Left Column: Controls and Simulation Parameters -->
+      <aside class="panel controls-panel">
+        <div class="panel-header">
+          <h2>Simulation Controller</h2>
+          <span class="panel-icon">⚙️</span>
+        </div>
+        
+        <div class="panel-section">
+          <h3>Simulation Presets</h3>
+          <div class="preset-buttons">
+            <button class="btn active" id="preset-normal" data-preset="normal">
+              <span class="btn-indicator green"></span> Normal Operations
+            </button>
+            <button class="btn" id="preset-wind" data-preset="wind">
+              <span class="btn-indicator yellow"></span> High Wind (Gale force)
+            </button>
+            <button class="btn" id="preset-fatigue" data-preset="fatigue">
+              <span class="btn-indicator red"></span> Cable Tension Loss
+            </button>
+            <button class="btn" id="preset-seismic" data-preset="seismic">
+              <span class="btn-indicator red"></span> Seismic Perturbation
+            </button>
+            <button class="btn" id="preset-sensor-fault" data-preset="sensor-fault">
+              <span class="btn-indicator orange"></span> Sensor Drift/Fault
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>Environmental & Dynamic Controls</h3>
+          
+          <div class="control-group">
+            <div class="control-label">
+              <span>Traffic Load Density</span>
+              <span class="control-val" id="val-traffic">Moderate</span>
+            </div>
+            <input type="range" id="slider-traffic" min="0" max="3" step="1" value="1">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Wind Velocity (knots)</span>
+              <span class="control-val" id="val-wind">12 kts</span>
+            </div>
+            <input type="range" id="slider-wind" min="0" max="80" step="1" value="12">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Ambient Temp (°C)</span>
+              <span class="control-val" id="val-temp">24°C</span>
+            </div>
+            <input type="range" id="slider-temp" min="-10" max="45" step="1" value="24">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Sensor Noise Level</span>
+              <span class="control-val" id="val-noise">Low</span>
+            </div>
+            <input type="range" id="slider-noise" min="5" max="50" step="5" value="10">
+          </div>
+        </div>
+
+        <div class="panel-section method-info">
+          <h3>Hybrid AI & Fusion Pipeline</h3>
+          <div class="info-block">
+            <div class="info-item">
+              <strong>Sensor Fusion:</strong> Kalman Filter combines Accelerometer and Strain Gauges. Identifies sensor failures using residual variance checks.
+            </div>
+            <div class="info-item">
+              <strong>Physics-Informed NN:</strong> Predicts structural bending using Euler-Bernoulli beam theory based on live load and temperature.
+            </div>
+            <div class="info-item">
+              <strong>Data-Driven AI:</strong> Autoencoder measures reconstruction error to detect unmodeled damage (like cracks/cable wear).
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Column: Digital Twin Canvas & Interactive View -->
+      <main class="main-content">
+        <div class="panel canvas-panel">
+          <div class="panel-header">
+            <h2>Bridge Digital Twin (2D Spatial Mapping)</h2>
+            <div class="canvas-legend">
+              <span class="legend-item"><span class="legend-dot green"></span> Strain Sensor</span>
+              <span class="legend-item"><span class="legend-dot cyan"></span> Accelerometer</span>
+              <span class="legend-item"><span class="legend-dot yellow"></span> Inclinometer</span>
+            </div>
+          </div>
+          <div class="canvas-container">
+            <canvas id="bridge-canvas"></canvas>
+            
+            <!-- Sensor Details Tooltip Overlay (Dynamically Updated) -->
+            <div class="sensor-overlay" id="node-overlay">
+              <h4 id="overlay-node-id">SENSOR S-01</h4>
+              <div class="overlay-row">
+                <span class="overlay-lbl">Type:</span>
+                <span class="overlay-val" id="overlay-node-type">Strain Gauge</span>
+              </div>
+              <div class="overlay-row">
+                <span class="overlay-lbl">Raw Stream:</span>
+                <span class="overlay-val text-red" id="overlay-node-raw">14.2 µε</span>
+              </div>
+              <div class="overlay-row">
+                <span class="overlay-lbl">Fused Value:</span>
+                <span class="overlay-val text-cyan" id="overlay-node-fused">12.5 µε</span>
+              </div>
+              <div class="overlay-row">
+                <span class="overlay-lbl">Health:</span>
+                <span class="overlay-val status-good" id="overlay-node-status">HEALTHY</span>
+              </div>
+            </div>
+          </div>
+          <div class="canvas-footer">
+            <span class="instruction">💡 Hover or click nodes on the digital twin to examine sensor metrics. Hover deck to see localized bending strain.</span>
+          </div>
+        </div>
+
+        <!-- Terminal Diagnostic Console -->
+        <div class="panel console-panel">
+          <div class="panel-header">
+            <h2>System Diagnosis & Diagnostics Logs</h2>
+            <button class="btn btn-sm" id="clear-logs">Clear</button>
+          </div>
+          <div class="terminal-body" id="logs-container">
+            <div class="log-line system">[SYSTEM] Twin initialization completed. Connected to virtual sensor grid.</div>
+            <div class="log-line fusion">[FUSION] Fusing 12 telemetry streams. Kalman Filter calibration: OK.</div>
+            <div class="log-line model">[HYBRID AI] Physics-informed baseline instantiated. Normal operating window computed.</div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Column: Graphs & Telemetry Analysis -->
+      <aside class="panel stats-panel">
+        <div class="panel-header">
+          <h2>Fused Telemetry & AI Diagnosis</h2>
+          <span class="panel-icon">📊</span>
+        </div>
+
+        <div class="panel-section chart-container-section">
+          <h3>Sensor Fusion (Signal Filtering)</h3>
+          <p class="chart-desc">Compares raw noisy accelerometer readings against Kalman Filter outputs.</p>
+          <div class="chart-wrapper">
+            <canvas id="chart-fusion"></canvas>
+          </div>
+        </div>
+
+        <div class="panel-section chart-container-section">
+          <h3>Hybrid AI Residual (Physics-vs-Actual)</h3>
+          <p class="chart-desc">Shows difference between physical beam bending calculations and actual deck deformation.</p>
+          <div class="chart-wrapper">
+            <canvas id="chart-residual"></canvas>
+          </div>
+        </div>
+
+        <div class="panel-section chart-container-section">
+          <h3>Unsupervised AI Anomaly Score</h3>
+          <p class="chart-desc">Autoencoder Reconstruction Loss. High value represents structural degradation.</p>
+          <div class="chart-wrapper">
+            <canvas id="chart-anomaly"></canvas>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
